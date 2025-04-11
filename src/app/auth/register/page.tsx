@@ -13,9 +13,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import { SetCookie } from '../action';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Register } from './action';
 
 const FormSchema = z.object({
   firstname: z.string(),
@@ -26,49 +25,7 @@ const FormSchema = z.object({
 });
 
 export default function Page() {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [phonenumber, setPhonenumber] = useState('');
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (
-      login === '' ||
-      password === '' ||
-      firstname === '' ||
-      lastname === '' ||
-      phonenumber === ''
-    )
-      return;
-    fetch('http://localhost:3001/auth/register', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'post',
-      body: JSON.stringify({
-        FirstName: firstname,
-        LastName: lastname,
-        PhoneNumber: phonenumber,
-        Login: login,
-        Password: password,
-      }),
-    })
-      .then(res => {
-        if (res.ok) return res.json();
-        throw res;
-      })
-      .then(data => {
-        SetCookie(data.Token.Token);
-        router.push('lk');
-      })
-      .catch(error => {
-        console.log(error);
-        setError(true);
-      });
-  }, [login, password, firstname, lastname, phonenumber]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -81,12 +38,17 @@ export default function Page() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    setFirstname(data.firstname);
-    setLastname(data.lastname);
-    setPhonenumber(data.phonenumber);
-    setLogin(data.login);
-    setPassword(data.password);
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    if (
+      (await Register(
+        data.firstname,
+        data.lastname,
+        data.phonenumber,
+        data.login,
+        data.password,
+      )) === null
+    )
+      setError(true);
   }
 
   return (

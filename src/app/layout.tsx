@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { NavbarMain } from '@/components/custom/navbar';
-import { ThemeProvider } from '@/components/custom/theme-provider';
+import { Wrapper } from '@/components/containers/wrapper';
+import { ThemeProvider } from '@/components/theme/theme-provider';
+import { Navbar } from '@/components/navigation/navbar';
+import { Footer } from '@/components/navigation/footer';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Pitfall',
-  description: 'You are going to be very rich ;)',
+  description: 'Easy money',
 };
 
 export default function RootLayout({
@@ -32,12 +34,9 @@ export default function RootLayout({
           attribute='class'
           defaultTheme='dark'
           disableTransitionOnChange>
-          <NavbarMain />
-          <div className='max-w-[1500px] mx-auto mt-30'>
-            <div className='bg-white dark:bg-black h-full rounded-2xl mx-5 p-5'>
-              {children}
-            </div>
-          </div>
+          <Navbar />
+          <Wrapper>{children}</Wrapper>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
